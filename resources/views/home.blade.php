@@ -7,4 +7,5 @@
 <button class="btn btn-danger">部屋を作る</button>
 
 <p>自分のID：<span id ="my-id"></span></p>
+<p>ALL IDs：<span id ="ids"></span></p>
 @endsection
