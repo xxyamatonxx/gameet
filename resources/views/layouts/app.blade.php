@@ -79,6 +79,6 @@
         <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="crossorigin="anonymous"></script>
     <script src="https://cdn.webrtc.ecl.ntt.com/skyway-latest.js"></script>   
-    <script src="{{ asset('js/main.js') }}" defer></script>
+    <script src="{{ asset('js/main.js') }}"></script>
 </body>
 </html>

@@ -1,11 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-<button class="btn btn-warning" id="random" >
-<a href="#">通話開始</a>
-</button>
-<button class="btn btn-danger">部屋を作る</button>
-
-<p>自分のID：<span id ="my-id"></span></p>
-<p>ALL IDs：<span id ="ids"></span></p>
+  <video id="my-video" width="400px" autoplay muted playsinline></video>
+  <p id="my-id"></p>
+  <input type="hidden" id="their-id"></input>
+  <button id="make-call">発信</button>
+  <video id="their-video" width="400px" autoplay muted playsinline></video>
+  
 @endsection
