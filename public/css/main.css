@@ -1,0 +1,46 @@
+main{
+  position: relative;
+}
+video{
+ width: 400px;
+ height: 200px;
+}
+.video-area{
+  display: flex;
+  text-align: center;
+}
+.video-container{
+  display: flex;
+  flex-direction: column-reverse;
+}
+.their-video{
+  display: flex;
+  flex-direction: column-reverse;
+}
+.button-area{
+text-align: center;
+}
+.chat-area{
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 100px 150px;
+}
+.userDetail{
+  display: grid;
+  grid-template-columns:1fr;
+  gap: 1em;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 5px;
+  border: 2px solid black;
+  min-width: 60%;
+  z-index: 1;
+  max-height: 75vh;
+  overflow: scroll;
+  transition: 0.3s;
+}
