@@ -1,6 +1,7 @@
 /* eslint-disable require-jsdoc */
 'use strict'
 
+
 $(function () {
   // Peer object
   const peer = new Peer({
@@ -14,9 +15,12 @@ $(function () {
   let room;
   let rooms;
   let roomNames = [];
+  let userName = $('#my-name').html();
+  let userID = $('#my-id').val();
+
 
   peer.on('open', () => {
-    $('#my-id').text(peer.id);
+    console.log('Peer接続完了')
     // Get things started
     step1();
   });
@@ -28,6 +32,7 @@ $(function () {
   });
 
   getRooms();
+
   $('#make-call').on('submit', e => {
     e.preventDefault();
     roomName = $('#join-room').val();
@@ -37,7 +42,6 @@ $(function () {
     room = peer.joinRoom('mesh_multi_' + roomName, { stream: localStream });
     //入室処理後
     joinedRoom()
-    $('#room-id').text(roomName);
     step3(room);
   });
 
@@ -48,7 +52,6 @@ $(function () {
       return;
     }
     room = peer.joinRoom('mesh_multi_' + roomName, { stream: localStream });
-    $('#room-id').text(roomName);
     step3(room);
   });
 
@@ -74,7 +77,7 @@ $(function () {
   });
 
 
-//部屋を作成
+  //部屋を作成
   $('#make-room').on('submit', e => {
     e.preventDefault();
     roomName = $('#make-room-name').val();
@@ -94,6 +97,40 @@ $(function () {
       return
     });
   });
+
+  //再検索ボタン
+  $('#serch-botton').on('click', () => {
+    getRooms();
+    alert('再検索しました。')
+    if (getRooms() >= 1) {
+      $('#make-call').show();
+    }
+  })
+  //自分情報
+  $('#my-name').on('click', () => {
+    userShow();
+  })
+  //ユーザー詳細
+  $('body').on('click', '.user-data',()=>{
+    userShow();
+  })
+
+  //ユーザー一覧
+  $('#users').on('click', () => {
+    users()
+  })
+
+  //初期画面
+  $('.gameet , #closeUserDetail').on('click', () => {
+    gameet()
+  })
+
+  //いいねボタン
+  $('#good-button').on('click', () => {
+    let id = $('#good-button').val()
+    addGood(id)
+  })
+
 
 
 
@@ -175,14 +212,13 @@ $(function () {
     $('#step1, #step3').hide();
     $('#step2').show();
     $('#join-room').on(focus());
+    gameet();
   }
 
   function step3(room) {
     // chatboxを追加する
     const chatbox = $('<div></div>').addClass('chatbox').attr('id', 'chatbox-' + room.name);
-    const header = $('<h4></h4>').html('Room: <strong>' + room.name + '</strong>');
-    const messages = $('<div><em>Peer connected.</em></div>').addClass('messages');
-    chatbox.append(header);
+    const messages = $('<div style="color: #8B8B8B"><em>チャットログ</em></div>').addClass('messages');
     chatbox.append(messages);
     $('#chatframe').append(chatbox);
 
@@ -199,15 +235,15 @@ $(function () {
     // チャットとかファイルが飛んできたらdataでonになる
     // ここではファイルは使わないのでもとのサンプルのif文はけしておく
     room.on('data', message => {
-      messages.prepend('<div><span class="peer">' + message.src.substr(0, 8) + '</span>: ' + message.data + '</div>');
+      messages.prepend('<div style="background-color: #5C2929 margin:0"><span class="peer">あいて</span>: ' + message.data + '</div>');
     });
 
-    room.on('peerJoin', peerId => {
-      messages.prepend('<div><span class="peer">' + peerId.substr(0, 8) + '</span>: has joined the room </div>');
+    room.on('peerJoin', () => {
+      messages.prepend('<div><span class="peer">あいて</span>と通話が開始しました。</div>');
     });
 
-    room.on('peerLeave', peerId => {
-      messages.prepend('<div><span class="peer">' + peerId.substr(0, 8) + '</span>: has left the room </div>');
+    room.on('peerLeave', () => {
+      messages.prepend('<div><span class="peer">あいて</span>が退出しました。新しく通話を募集してください。</div > ');
     });
 
     // streamが飛んできたら相手の画面を追加する
@@ -216,8 +252,8 @@ $(function () {
       const id = 'video_' + peerId + '_' + stream.id.replace('{', '').replace('}', '');
 
       $('#their-videos').append($(
-        '<div class="video_' + peerId + '" id="' + id + '">' +
-        '<label>' + stream.peerId + ':' + stream.id + '</label>' +
+        '<div class="their-video"' + peerId + '" id="' + id + '">' +
+        '<button class="user-data">ユーザー情報</button>' +
         '<video class="remoteVideos" autoplay playsinline>' +
         '</div>'));
       const el = $('#' + id).find('video').get(0);
@@ -253,13 +289,21 @@ $(function () {
           }
           $('#join-room').val(roomNames[Math.floor(Math.random() * roomNames.length)]);
         } else {
-          $('#join-room').val();
           alert('通話を募集してください');
+        };
+
+        if (roomNames.length == 0) {
+          $('#make-call').hide()//通話参加を隠す
+          $('#room-number').text('通話募集数が0です。通話を募集してください');
+        } else {
+          $('#room-number').text('通話募集数' + roomNames.length)
         }
+
       })
       .fail(function (XMLHttpRequest, textStatus, errorThrown) {
         alert("error");
       });
+    return roomNames.length;
   };
 
   //入室後処理
@@ -276,5 +320,40 @@ $(function () {
       alert("error");
     })
   }
-  
+
+  //ユーザー詳細
+  function userShow() {
+    $.ajax({
+      url: 'https://ec2-13-115-207-61.ap-northeast-1.compute.amazonaws.com/api/user/' + userID,
+      type: 'get',
+      dataType: 'json',
+      timeout: 3000,
+    }).done(function (data) {
+      alert('user');
+      $('#userDetailName').text(data.data.name);
+      $('#userDetail').show();
+      return data;
+    }).fail(function (XMLHttpRequest, textStatus, errorThrown) {
+      alert("error");
+    })
+  }
+
+  //初期画面
+  function gameet() {
+    $('#tell-area').show();
+    $('.users').hide();
+    $('#userDetail').hide();
+  }
+
+  //ユーザー一覧
+  function users() {
+    $('#tell-area').hide();
+    $('.users').show();
+  }
+
+  //いいね機能
+  function addGood(id) {
+    
+  }
+
 });

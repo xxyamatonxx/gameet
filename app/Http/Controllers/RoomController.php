@@ -7,7 +7,9 @@ use App\Room;
 use App\Http\Requests\StoreRoom;
 
 class RoomController extends Controller
+//APIコントローラー
 {
+
     /**
      * Display a listing of the resource.
      *
